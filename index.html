@@ -6,7 +6,7 @@
 
 <body style="margin:0;font-family:Arial;text-align:center;background:#000;color:#0f0;overflow:hidden">
 
-<h1 id="title">🌍 COOKIE OMNIVERSE ONLINE</h1>
+<h1>🌍 COOKIE OMNIVERSE ONLINE</h1>
 
 <h2>
 PLAYER: YOU |
@@ -16,18 +16,20 @@ RANK: <span id="rank">NOVICE COOKIE</span>
 <h3>
 SCORE: <span id="score">0</span> |
 WORLD: <span id="world">1</span> |
-BOSS HP: <span id="boss">100</span>
+BOSS HP: <span id="boss">100</span> |
+👍 LIKES: <span id="likes">0</span>
 </h3>
 
 <button id="cookie"
 onclick="hit()"
-style="font-size:80px;padding:20px;border-radius:20px;margin-top:20px">
+style="font-size:80px;padding:20px;border-radius:20px;margin-top:20px;transition:0.2s">
 🍪
 </button>
 
 <br><br>
 
 <button onclick="upgrade()">Upgrade 🛠</button>
+<button onclick="like()">👍 Like</button>
 <button onclick="reset()">Reset Universe 💾</button>
 
 <h3>🌍 GLOBAL LEADERBOARD (FAKE)</h3>
@@ -38,7 +40,7 @@ let score = 0
 let world = 1
 let boss = 100
 let power = 1
-let evolution = 0
+let likes = 0
 
 let ranks = [
   "NOVICE COOKIE",
@@ -57,14 +59,19 @@ let fakePlayers = [
 
 function hit(){
   let dmg = power * (Math.random()<0.2 ? 5 : 1)
+  dmg += Math.floor(likes / 10)
 
   score += dmg
   boss -= dmg
 
+  // tiny click animation
+  let c = document.getElementById("cookie")
+  c.style.transform = "scale(0.9)"
+  setTimeout(()=>c.style.transform="scale(1)",80)
+
   if(boss <= 0){
     world++
     boss = 100 + world*20
-    evolution++
     storyEvent()
   }
 
@@ -78,19 +85,31 @@ function upgrade(){
   story("🛠 Power upgraded!")
 }
 
+function like(){
+  likes++
+  document.getElementById("likes").innerText = likes
+  story("👍 Cookie universe liked!")
+}
+
 function evolve(){
-  if(score > 50) document.getElementById("cookie").innerText = "🍪"
-if(score > 100) document.getElementById("cookie").innerText = "🍧"
-  if(score > 200) document.getElementById("cookie").innerText = "🍩"
-  if(score > 500) document.getElementById("cookie").innerText = "🔥 COOKIE"
+  let cookie = document.getElementById("cookie")
+
+  if(score > 50) cookie.innerText = "🍪"
+  if(score > 100) cookie.innerText = "🍧 Ice Cookie"
+  if(score > 200) cookie.innerText = "🍩 Donut Cookie"
+  if(score > 350) cookie.innerText = "🍫 Choco Cookie"
+  if(score > 500) cookie.innerText = "🔥 Fire Cookie"
+  if(score > 800) cookie.innerText = "⚡ Thunder Cookie"
+  if(score > 1200) cookie.innerText = "🌌 Cosmic Cookie"
+  if(score > 2000) cookie.innerText = "👑 COOKIE DEITY"
 }
 
 function storyEvent(){
   let events = [
-    "🌌 A new universe has opened...",
-    "👁 The cookie gods are watching...",
-    "⚠ Reality shifts again...",
-    "🧬 Your cookie evolves..."
+    "🌌 A new universe opens...",
+    "👁 Cookie gods are watching...",
+    "⚠ Reality shifts...",
+    "🧬 You evolve beyond cookies..."
   ]
   story(events[Math.floor(Math.random()*events.length)])
 }
@@ -104,7 +123,7 @@ function reset(){
   world = 1
   boss = 100
   power = 1
-  evolution = 0
+  likes = 0
   story("🔁 Universe reset!")
   update()
 }
@@ -113,6 +132,7 @@ function update(){
   document.getElementById("score").innerText = score
   document.getElementById("world").innerText = world
   document.getElementById("boss").innerText = boss
+  document.getElementById("likes").innerText = likes
 
   let rankIndex = Math.min(ranks.length-1, Math.floor(score/200))
   document.getElementById("rank").innerText = ranks[rankIndex]
@@ -126,7 +146,6 @@ function renderBoard(){
     fakePlayers.map(p=>`<div>${p.name} - ${p.score}</div>`).join("")
 }
 
-// boss becomes smarter 😈
 setInterval(()=>{
   if(boss > 0){
     score = Math.max(0, score - world)
